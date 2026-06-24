@@ -9,6 +9,7 @@ import { BeforeAfterSection } from "@/components/sections/BeforeAfterSection";
 import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
 import { FAQSection } from "@/components/sections/FAQSection";
 import { ContactOptionsBlock } from "@/components/sections/ContactOptionsBlock";
+import { AvailabilitySection } from "@/components/sections/AvailabilitySection";
 import { FinalCTA } from "@/components/sections/FinalCTA";
 import { BookingWizard } from "@/components/booking/BookingWizard";
 
@@ -25,6 +26,7 @@ export default function Home() {
         <TestimonialsSection />
         <FAQSection />
         <ContactOptionsBlock />
+        <AvailabilitySection />
         <FinalCTA />
       </main>
       <Footer />
