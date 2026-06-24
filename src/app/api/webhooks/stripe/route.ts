@@ -29,9 +29,10 @@ export async function POST(req: Request) {
       process.env.STRIPE_WEBHOOK_SECRET
     );
     console.log(`[WEBHOOK] Signature verified successfully. Event type: ${event.type}`);
-  } catch (error: any) {
-    console.error(`[WEBHOOK] Signature verification failed: ${error.message}`);
-    return new NextResponse(`Webhook Error: ${error.message}`, { status: 400 });
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error(`[WEBHOOK] Signature verification failed: ${errorMessage}`);
+    return new NextResponse(`Webhook Error: ${errorMessage}`, { status: 400 });
   }
 
   // Handle the event
@@ -64,13 +65,14 @@ export async function POST(req: Request) {
             status: "pending",
           });
           console.log(`[SUPABASE] Success: Booking inserted with ID: ${booking.id}`);
-        } catch (dbError: any) {
-          if (dbError.message === "Duplicate booking for this payment intent") {
+        } catch (dbError: unknown) {
+          const errorMessage = dbError instanceof Error ? dbError.message : String(dbError);
+          if (errorMessage === "Duplicate booking for this payment intent") {
             console.warn(`[SUPABASE] Warning: Idempotency check passed. Booking for intent ${paymentIntentAuth.id} already exists.`);
             // We exit early because we don't want to double-send emails for retries
             return new NextResponse(null, { status: 200 });
           } else {
-            console.error(`[SUPABASE] Error inserting booking: ${dbError.message}`);
+            console.error(`[SUPABASE] Error inserting booking: ${errorMessage}`);
             throw dbError; 
           }
         }
@@ -85,8 +87,9 @@ export async function POST(req: Request) {
           
           if (receptionResult) console.log(`[EMAIL] Success: Receptionist notification sent (ID: ${receptionResult.id})`);
           if (patientResult) console.log(`[EMAIL] Success: Patient confirmation sent (ID: ${patientResult.id})`);
-        } catch (emailError: any) {
-          console.error(`[EMAIL] Non-fatal error during email dispatch: ${emailError.message}`);
+        } catch (emailError: unknown) {
+          const errorMessage = emailError instanceof Error ? emailError.message : String(emailError);
+          console.error(`[EMAIL] Non-fatal error during email dispatch: ${errorMessage}`);
           // We don't throw because the booking was saved. Return 200 to Stripe.
         }
         
@@ -107,9 +110,10 @@ export async function POST(req: Request) {
 
     console.log("--- [WEBHOOK] Processing Complete ---\n");
     return new NextResponse(null, { status: 200 });
-  } catch (error: any) {
-    console.error(`[WEBHOOK] Critical error processing webhook: ${error.message}`);
-    return new NextResponse(`Webhook Handler Error: ${error.message}`, { status: 500 });
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error(`[WEBHOOK] Critical error processing webhook: ${errorMessage}`);
+    return new NextResponse(`Webhook Handler Error: ${errorMessage}`, { status: 500 });
   }
 }
 

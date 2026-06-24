@@ -43,7 +43,7 @@ export function TestimonialsSection() {
 
           {/* Text Reviews */}
           <div>
-            <h2 className="text-4xl md:text-5xl font-serif mb-12">Don't just take our word for it.</h2>
+            <h2 className="text-4xl md:text-5xl font-serif mb-12">Don&apos;t just take our word for it.</h2>
             <div className="space-y-10">
               {testimonials.map((t, idx) => (
                 <div key={idx} className="relative pl-6 border-l border-white/20 hover:border-gold transition-colors duration-300">
@@ -53,7 +53,7 @@ export function TestimonialsSection() {
                     ))}
                   </div>
                   <p className="text-lg md:text-xl font-serif italic text-white/90 mb-4">
-                    "{t.quote}"
+                    &quot;{t.quote}&quot;
                   </p>
                   <div>
                     <span className="block font-medium">{t.name}</span>

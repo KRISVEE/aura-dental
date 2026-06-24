@@ -8,7 +8,6 @@ import {
   Section,
   Text,
   Hr,
-  Img,
 } from "@react-email/components";
 import * as React from "react";
 import { Booking } from "@/types/database";
