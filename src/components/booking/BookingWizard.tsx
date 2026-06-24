@@ -3,6 +3,7 @@
 import * as React from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { X, ArrowLeft } from "lucide-react"
+import { Button } from "@/components/ui/Button"
 
 import { useBookingModal } from "@/hooks/useBookingModal"
 import { BookingProvider, useBookingWizard } from "@/contexts/BookingContext"
@@ -33,16 +34,31 @@ const variants = {
 function WizardContent() {
   const { isOpen, closeModal } = useBookingModal()
   const { step, direction, previousStep, resetBooking } = useBookingWizard()
+  const [showCloseConfirm, setShowCloseConfirm] = React.useState(false)
 
   // Clear state when modal is fully closed
   React.useEffect(() => {
     if (!isOpen) {
+      setShowCloseConfirm(false)
       const timer = setTimeout(() => {
         resetBooking()
       }, 300)
       return () => clearTimeout(timer)
     }
   }, [isOpen, resetBooking])
+
+  const handleCloseAttempt = () => {
+    if (step === 5) {
+      closeModal()
+    } else {
+      setShowCloseConfirm(true)
+    }
+  }
+
+  const handleForceClose = () => {
+    setShowCloseConfirm(false)
+    closeModal()
+  }
 
   if (!isOpen) return null
 
@@ -53,7 +69,7 @@ function WizardContent() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        onClick={closeModal}
+        onClick={handleCloseAttempt}
         className="absolute inset-0 bg-navy/80 backdrop-blur-sm"
         aria-hidden="true"
       />
@@ -87,7 +103,7 @@ function WizardContent() {
           </div>
 
           <button 
-            onClick={closeModal}
+            onClick={handleCloseAttempt}
             className="p-2 -mr-2 text-charcoal-500 hover:text-navy hover:bg-charcoal-200/50 rounded-full transition-colors"
             aria-label="Close booking modal"
           >
@@ -129,6 +145,42 @@ function WizardContent() {
             </motion.div>
           </AnimatePresence>
         </div>
+
+        {/* Close Confirmation Dialog */}
+        <AnimatePresence>
+          {showCloseConfirm && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 z-50 flex items-center justify-center bg-navy/60 backdrop-blur-sm p-6"
+            >
+              <motion.div 
+                initial={{ scale: 0.9, opacity: 0, y: 10 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.9, opacity: 0, y: 10 }}
+                className="bg-white p-8 rounded-2xl shadow-luxury max-w-sm text-center border border-charcoal-200"
+              >
+                <div className="w-16 h-16 bg-gold/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <span className="text-3xl">✨</span>
+                </div>
+                <h3 className="text-3xl font-serif text-navy mb-4">Wait! Are you sure?</h3>
+                <p className="text-charcoal-500 mb-8 leading-relaxed">
+                  You are so close to securing your premium consultation. Our slots fill up extremely fast.
+                </p>
+                <div className="flex flex-col gap-3">
+                  <Button onClick={() => setShowCloseConfirm(false)} className="w-full h-12 text-md shadow-md hover:shadow-lg">
+                    I want to continue
+                  </Button>
+                  <Button variant="ghost" onClick={handleForceClose} className="w-full h-12 text-charcoal-400 hover:text-charcoal-600 hover:bg-transparent">
+                    Yes, leave anyway
+                  </Button>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
       </motion.div>
     </div>
   )
