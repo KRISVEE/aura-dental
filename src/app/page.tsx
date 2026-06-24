@@ -3,6 +3,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Hero } from "@/components/sections/Hero";
 import { TrustBar } from "@/components/sections/TrustBar";
+import { WhyChooseUs } from "@/components/sections/WhyChooseUs";
 import { TreatmentGrid } from "@/components/sections/TreatmentGrid";
 import { BeforeAfterSection } from "@/components/sections/BeforeAfterSection";
 import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
@@ -17,6 +18,7 @@ export default function Home() {
       <main className="flex-1">
         <Hero />
         <TrustBar />
+        <WhyChooseUs />
         <TreatmentGrid />
         <BeforeAfterSection />
         <TestimonialsSection />
