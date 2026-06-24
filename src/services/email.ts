@@ -11,21 +11,27 @@ const TEST_EMAIL = process.env.NODE_ENV === "development" ? "onboarding@resend.d
 
 export async function sendReceptionNotification(booking: Booking) {
   try {
-    const { data, error } = await resend.emails.send({
+    const toAddress = TEST_EMAIL || CLINIC_EMAIL;
+    console.log(`[EMAIL] Sending Reception notification...`);
+    console.log(`[EMAIL] From: Aura Dental <onboarding@resend.dev> | To: ${toAddress}`);
+    
+    const response = await resend.emails.send({
       from: "Aura Dental <onboarding@resend.dev>",
-      to: TEST_EMAIL || CLINIC_EMAIL,
+      to: toAddress,
       subject: `New Implant Consultation Deposit Received - ${booking.first_name} ${booking.last_name}`,
       react: React.createElement(ReceptionistNotification, { booking }),
     });
 
-    if (error) {
-      console.error("Failed to send receptionist notification:", error);
-      throw error;
+    console.log(`[EMAIL] Resend API Response (Reception): ${JSON.stringify(response)}`);
+
+    if (response.error) {
+      console.error(`[EMAIL] Resend API Error (Reception):`, response.error);
+      throw response.error;
     }
     
-    return data;
+    return response.data;
   } catch (error) {
-    console.error("Resend service error (Receptionist):", error);
+    console.error("[EMAIL] Resend service error (Receptionist):", error);
     // Don't throw, we want to fail gracefully
     return null;
   }
@@ -33,21 +39,27 @@ export async function sendReceptionNotification(booking: Booking) {
 
 export async function sendPatientConfirmation(booking: Booking) {
   try {
-    const { data, error } = await resend.emails.send({
+    const toAddress = TEST_EMAIL || booking.email;
+    console.log(`[EMAIL] Sending Patient confirmation...`);
+    console.log(`[EMAIL] From: Aura Dental <onboarding@resend.dev> | To: ${toAddress}`);
+    
+    const response = await resend.emails.send({
       from: "Aura Dental <onboarding@resend.dev>",
-      to: TEST_EMAIL || booking.email,
+      to: toAddress,
       subject: "Your Consultation Request Has Been Received",
       react: React.createElement(PatientConfirmation, { booking }),
     });
 
-    if (error) {
-      console.error("Failed to send patient confirmation:", error);
-      throw error;
+    console.log(`[EMAIL] Resend API Response (Patient): ${JSON.stringify(response)}`);
+
+    if (response.error) {
+      console.error(`[EMAIL] Resend API Error (Patient):`, response.error);
+      throw response.error;
     }
     
-    return data;
+    return response.data;
   } catch (error) {
-    console.error("Resend service error (Patient):", error);
+    console.error("[EMAIL] Resend service error (Patient):", error);
     // Don't throw, we want to fail gracefully
     return null;
   }

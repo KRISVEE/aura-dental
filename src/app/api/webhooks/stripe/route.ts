@@ -78,6 +78,7 @@ export async function POST(req: Request) {
         }
 
         try {
+          console.log("[WEBHOOK] Booking successfully inserted into Supabase.");
           console.log("[EMAIL] Attempting to dispatch emails...");
           // We must await the promise array so Next.js doesn't terminate the function early
           const [receptionResult, patientResult] = await Promise.all([
