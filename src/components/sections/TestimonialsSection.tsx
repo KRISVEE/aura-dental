@@ -1,22 +1,9 @@
-import { Star, PlayCircle } from "lucide-react"
+"use client"
 
-const testimonials = [
-  {
-    name: "Sarah Jenkins",
-    treatment: "Dental Implants",
-    quote: "After years of hiding my smile, the team at Aura completely transformed my confidence. The process was completely painless and the results are incredibly natural.",
-  },
-  {
-    name: "James Thorne",
-    treatment: "Invisalign®",
-    quote: "The digital scanning technology meant no messy impressions. I knew exactly what my teeth would look like before we even started. Simply world-class service.",
-  },
-  {
-    name: "Emma Williams",
-    treatment: "Porcelain Veneers",
-    quote: "I traveled from outside London just to see this team. The attention to detail is unmatched. My veneers look like perfectly natural teeth.",
-  }
-]
+import { Star, PlayCircle } from "lucide-react"
+import { clinicConfig } from "@/config/clinic"
+import Image from "next/image"
+import { motion } from "framer-motion"
 
 export function TestimonialsSection() {
   return (
@@ -25,12 +12,20 @@ export function TestimonialsSection() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           
           {/* Featured Video Placeholder */}
-          <div className="relative h-[400px] md:h-[500px] rounded-2xl overflow-hidden group cursor-pointer shadow-2xl">
+          <motion.div 
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="relative h-[400px] md:h-[500px] rounded-2xl overflow-hidden group cursor-pointer shadow-2xl"
+          >
             <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors z-10" />
-            <img 
+            <Image 
               src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1000&auto=format&fit=crop" 
               alt="Patient video testimonial" 
-              className="absolute inset-0 w-full h-full object-cover"
+              fill
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              className="object-cover transition-transform duration-700 group-hover:scale-105"
             />
             <div className="absolute inset-0 z-20 flex items-center justify-center">
               <PlayCircle className="w-20 h-20 text-white opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300" strokeWidth={1} />
@@ -39,30 +34,35 @@ export function TestimonialsSection() {
               <p className="font-serif text-2xl mb-1">Meet Rebecca</p>
               <p className="text-gold text-sm font-medium">Full Mouth Reconstruction</p>
             </div>
-          </div>
+          </motion.div>
 
           {/* Text Reviews */}
-          <div>
+          <motion.div 
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
             <h2 className="text-4xl md:text-5xl font-serif mb-12">Don&apos;t just take our word for it.</h2>
             <div className="space-y-10">
-              {testimonials.map((t, idx) => (
+              {clinicConfig.testimonials.map((t, idx) => (
                 <div key={idx} className="relative pl-6 border-l border-white/20 hover:border-gold transition-colors duration-300">
                   <div className="flex gap-1 mb-3">
-                    {[1, 2, 3, 4, 5].map((i) => (
+                    {[...Array(t.rating)].map((_, i) => (
                       <Star key={i} className="w-4 h-4 fill-gold text-gold" />
                     ))}
                   </div>
                   <p className="text-lg md:text-xl font-serif italic text-white/90 mb-4">
-                    &quot;{t.quote}&quot;
+                    &quot;{t.text}&quot;
                   </p>
                   <div>
                     <span className="block font-medium">{t.name}</span>
-                    <span className="text-sm text-gold">{t.treatment}</span>
+                    <span className="text-sm text-gold">{t.role}</span>
                   </div>
                 </div>
               ))}
             </div>
-          </div>
+          </motion.div>
 
         </div>
       </div>

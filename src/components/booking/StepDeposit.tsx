@@ -43,6 +43,15 @@ export function StepDeposit() {
     }
 
     createPaymentIntent()
+    
+    // Analytics tracking
+    if (typeof window !== "undefined" && window.gtag) {
+      window.gtag("event", "begin_checkout", {
+        currency: "GBP",
+        value: 50.0,
+        items: [{ item_name: "Consultation Deposit" }]
+      });
+    }
   }, [treatment, preferredTime, patientDetails])
 
   return (

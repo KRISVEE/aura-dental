@@ -47,8 +47,20 @@ export function CheckoutForm() {
       toast.error(errMessage)
       setIsProcessing(false)
     } else {
-      // Payment succeeded or requires additional actions (handled by Stripe if needed)
-      // Since we use manual capture, it authorizes the card and succeeds.
+      // Payment succeeded
+      if (typeof window !== "undefined" && window.gtag) {
+        window.gtag("event", "purchase", {
+          currency: "GBP",
+          value: 50.0,
+          transaction_id: `DEP_${Date.now()}`,
+          items: [{ item_name: "Consultation Deposit" }]
+        });
+        window.gtag("event", "generate_lead", {
+          currency: "GBP",
+          value: 50.0,
+        });
+      }
+      
       nextStep()
     }
   }
