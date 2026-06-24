@@ -1,10 +1,10 @@
 import { resend } from "@/lib/resend";
 import { Booking } from "@/types/database";
 
-const CLINIC_EMAIL = "hello@auradental.co.uk"; 
-// In development with Resend free tier, emails can only be sent TO the verified domain/email.
-// To avoid errors locally, we will fallback to a default email if provided via env var, or you can hardcode your own email for testing.
-const TEST_EMAIL = process.env.NODE_ENV === "development" ? "onboarding@resend.dev" : null;
+const CLINIC_EMAIL = "yoitspandamon@gmail.com"; 
+// In development or on Resend free tier, emails can only be sent TO the verified email address.
+// We override the patient email and clinic email to your verified address so you can test it.
+const TEST_EMAIL = "yoitspandamon@gmail.com";
 
 export async function sendReceptionNotification(booking: Booking) {
   try {
