@@ -18,11 +18,8 @@ export function useBookingModal() {
   const closeModal = useCallback(() => {
     const params = new URLSearchParams(searchParams.toString());
     params.delete("booking");
-    // Replace to not clutter history if they just closed it, or push?
-    // standard behavior for back-button-support is pushing a clean URL, but 
-    // router.back() might be better if they got here via push. 
-    // To be safe and deterministic, we push the clean URL.
-    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    const newUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname;
+    router.replace(newUrl, { scroll: false });
   }, [searchParams, router, pathname]);
 
   // Handle Escape key

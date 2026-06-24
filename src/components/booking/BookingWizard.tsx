@@ -55,9 +55,8 @@ function WizardContent() {
     }
   }
 
-  const handleForceClose = (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
+  const handleForceClose = () => {
+    setShowCloseConfirm(false)
     closeModal()
   }
 
