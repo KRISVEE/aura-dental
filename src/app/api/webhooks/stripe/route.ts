@@ -54,6 +54,7 @@ export async function POST(req: Request) {
         try {
           console.log("[SUPABASE] Attempting to insert booking...");
           booking = await createBooking({
+            booking_reference: metadata.bookingReference || `AD-${Date.now()}-BK`, // fallback if missing
             first_name: metadata.firstName,
             last_name: metadata.lastName,
             email: metadata.email,

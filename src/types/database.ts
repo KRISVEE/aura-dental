@@ -2,6 +2,7 @@ export type BookingStatus = "pending" | "deposit_held" | "confirmed" | "cancelle
 
 export interface Booking {
   id: string;
+  booking_reference: string;
   first_name: string;
   last_name: string;
   email: string;
@@ -15,6 +16,7 @@ export interface Booking {
 }
 
 export interface BookingInsert {
+  booking_reference: string;
   first_name: string;
   last_name: string;
   email: string;

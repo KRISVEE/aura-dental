@@ -13,6 +13,13 @@ export async function POST(req: Request) {
       );
     }
 
+    // Generate a unique booking reference
+    // Format: AD-YYYYMMDD-XXXX
+    const date = new Date();
+    const dateString = date.toISOString().slice(0, 10).replace(/-/g, "");
+    const randomSuffix = Math.random().toString(36).substring(2, 6).toUpperCase();
+    const bookingReference = `AD-${dateString}-${randomSuffix}`;
+
     // Create a PaymentIntent with a manual capture method.
     // This authorizes the card for £50 but does not capture the funds yet,
     // allowing the clinic to capture or release the funds later.
@@ -25,6 +32,7 @@ export async function POST(req: Request) {
       },
       // Store the patient's form data in metadata so it's available in the webhook
       metadata: {
+        bookingReference,
         treatment,
         preferredTime,
         firstName: patientDetails.firstName,
@@ -37,7 +45,10 @@ export async function POST(req: Request) {
       receipt_email: patientDetails.email,
     });
 
-    return NextResponse.json({ clientSecret: paymentIntent.client_secret });
+    return NextResponse.json({ 
+      clientSecret: paymentIntent.client_secret,
+      bookingReference
+    });
   } catch (error) {
     console.error("Error creating payment intent:", error);
     return NextResponse.json(

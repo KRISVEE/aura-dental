@@ -9,6 +9,7 @@ export async function createBooking(data: BookingInsert): Promise<Booking> {
     .from("bookings")
     .insert([
       {
+        booking_reference: data.booking_reference,
         first_name: data.first_name,
         last_name: data.last_name,
         email: data.email,

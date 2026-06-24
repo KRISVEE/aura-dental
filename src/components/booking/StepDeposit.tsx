@@ -12,7 +12,7 @@ import { CheckoutForm } from "./CheckoutForm"
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
 export function StepDeposit() {
-  const { treatment, preferredTime, patientDetails } = useBookingWizard()
+  const { treatment, preferredTime, patientDetails, setBookingReference } = useBookingWizard()
   const [clientSecret, setClientSecret] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
@@ -37,6 +37,9 @@ export function StepDeposit() {
         }
 
         setClientSecret(data.clientSecret)
+        if (data.bookingReference) {
+          setBookingReference(data.bookingReference)
+        }
       } catch (err: unknown) {
         setError(err instanceof Error ? err.message : "Failed to initialize payment")
       }

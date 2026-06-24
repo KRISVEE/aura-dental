@@ -9,11 +9,13 @@ interface BookingContextState {
   treatment: TreatmentType | null
   preferredTime: TimePreference | null
   patientDetails: PatientDetails | null
+  bookingReference: string | null
   
   // Actions
   setTreatment: (t: TreatmentType) => void
   setPreferredTime: (t: TimePreference) => void
   setPatientDetails: (d: PatientDetails) => void
+  setBookingReference: (ref: string) => void
   nextStep: () => void
   previousStep: () => void
   resetBooking: () => void
@@ -27,6 +29,7 @@ export function BookingProvider({ children }: { children: ReactNode }) {
   const [treatment, setTreatment] = useState<TreatmentType | null>(null)
   const [preferredTime, setPreferredTime] = useState<TimePreference | null>(null)
   const [patientDetails, setPatientDetails] = useState<PatientDetails | null>(null)
+  const [bookingReference, setBookingReference] = useState<string | null>(null)
 
   const nextStep = () => {
     setDirection(1)
@@ -51,6 +54,7 @@ export function BookingProvider({ children }: { children: ReactNode }) {
     setTreatment(null)
     setPreferredTime(null)
     setPatientDetails(null)
+    setBookingReference(null)
   }
 
   return (
@@ -61,9 +65,11 @@ export function BookingProvider({ children }: { children: ReactNode }) {
         treatment,
         preferredTime,
         patientDetails,
+        bookingReference,
         setTreatment,
         setPreferredTime,
         setPatientDetails,
+        setBookingReference,
         nextStep,
         previousStep,
         resetBooking,

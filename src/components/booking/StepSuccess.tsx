@@ -6,7 +6,7 @@ import { useBookingWizard } from "@/contexts/BookingContext"
 import { useBookingModal } from "@/hooks/useBookingModal"
 
 export function StepSuccess() {
-  const { treatment, preferredTime, resetBooking } = useBookingWizard()
+  const { treatment, preferredTime, bookingReference, resetBooking } = useBookingWizard()
   const { closeModal } = useBookingModal()
 
   const handleReturn = () => {
@@ -50,9 +50,19 @@ export function StepSuccess() {
       </div>
       
       <h2 className="text-4xl font-serif text-navy mb-4">Deposit Secured</h2>
-      <p className="text-lg text-charcoal-500 mb-8 max-w-sm mx-auto">
+      <p className="text-lg text-charcoal-500 mb-2 max-w-sm mx-auto">
         Your consultation is reserved. Our concierge team will contact you shortly to confirm your exact appointment time.
       </p>
+      
+      {bookingReference && (
+        <div className="mb-8 mt-4 bg-navy/5 border border-navy/10 rounded-lg p-3 max-w-sm mx-auto">
+          <p className="text-sm text-navy mb-1 font-medium">Booking Reference</p>
+          <p className="text-xl font-mono text-navy font-bold tracking-widest">{bookingReference}</p>
+          <p className="text-xs text-charcoal-500 mt-2 font-medium">
+            Please keep your booking reference for future communication with the clinic.
+          </p>
+        </div>
+      )}
 
       <div className="bg-charcoal-200/30 rounded-xl p-6 mb-10 max-w-sm mx-auto text-left border border-charcoal-200">
         <h3 className="font-medium text-navy mb-4 border-b border-charcoal-200 pb-2">Booking Summary</h3>
