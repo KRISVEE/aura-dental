@@ -81,7 +81,7 @@ export function BookingsTable({ initialBookings }: { initialBookings: Booking[] 
     switch (status) {
       case "pending_confirmation":
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
             Pending Confirmation
           </span>
         );
@@ -93,13 +93,13 @@ export function BookingsTable({ initialBookings }: { initialBookings: Booking[] 
         );
       case "consultation_scheduled":
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
             Consultation Scheduled
           </span>
         );
       case "treatment_planned":
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
             Treatment Planned
           </span>
         );

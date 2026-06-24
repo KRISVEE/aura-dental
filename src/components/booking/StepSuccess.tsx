@@ -58,7 +58,7 @@ export function StepSuccess() {
         <div className="mb-8 mt-4 bg-navy/5 border border-navy/10 rounded-lg p-4 max-w-sm mx-auto">
           <div className="mb-4 pb-4 border-b border-navy/10">
             <p className="text-sm text-navy mb-1 font-medium">Status</p>
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-amber-100 text-amber-800">
               Pending Confirmation
             </span>
           </div>

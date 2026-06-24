@@ -22,7 +22,7 @@ export async function sendReceptionNotification(booking: Booking) {
           <p>A new £50 deposit has been paid for a consultation.</p>
           <div style="background-color: #f9fafb; padding: 20px; border-radius: 6px; margin: 20px 0;">
             <p><strong>Booking Ref:</strong> <span style="font-family: monospace; font-size: 16px;">${booking.booking_reference}</span></p>
-            <p><strong>Status:</strong> <span style="color: #ca8a04; font-weight: bold;">Pending Confirmation</span></p>
+            <p><strong>Status:</strong> <span style="color: #d97706; font-weight: bold;">Pending Confirmation</span></p>
             <p><strong>Patient:</strong> ${booking.first_name} ${booking.last_name}</p>
             <p><strong>Email:</strong> ${booking.email}</p>
             <p><strong>Phone:</strong> ${booking.phone}</p>
@@ -69,7 +69,7 @@ export async function sendPatientConfirmation(booking: Booking) {
           <div style="background-color: #f9fafb; padding: 20px; border-radius: 6px; margin: 20px 0;">
             <h2 style="margin-top: 0;">Your Request Details</h2>
             <p><strong>Booking Reference:</strong> <span style="font-family: monospace; font-size: 16px;">${booking.booking_reference}</span></p>
-            <p><strong>Status:</strong> <span style="color: #ca8a04; font-weight: bold;">Pending Confirmation</span></p>
+            <p><strong>Status:</strong> <span style="color: #d97706; font-weight: bold;">Pending Confirmation</span></p>
             <p><strong>Interest:</strong> <span style="text-transform: capitalize;">${booking.treatment_interest}</span></p>
             <p><strong>Preferred Time:</strong> <span style="text-transform: capitalize;">${booking.preferred_time}</span></p>
             <p><strong>Deposit:</strong> £50.00 Paid</p>
