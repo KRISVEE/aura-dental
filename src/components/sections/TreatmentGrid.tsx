@@ -8,55 +8,66 @@ import { clinicConfig } from "@/config/clinic"
 
 export function TreatmentGrid() {
   return (
-    <section id="treatments" className="py-24 bg-pearl overflow-hidden">
-      <div className="container mx-auto px-4 md:px-8">
+    <section id="treatments" className="py-32 bg-white overflow-hidden relative">
+      {/* Decorative gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-pearl via-white to-pearl pointer-events-none" />
+
+      <div className="container mx-auto px-4 md:px-8 relative z-10">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center max-w-2xl mx-auto mb-16"
+          transition={{ duration: 0.8 }}
+          className="text-center max-w-2xl mx-auto mb-20"
         >
-          <h2 className="text-4xl md:text-5xl font-serif text-navy mb-6">Our Expertise</h2>
-          <p className="text-charcoal-500 text-lg">
+          <p className="text-gold font-semibold tracking-[0.2em] uppercase text-sm mb-4">
+            Our Expertise
+          </p>
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif text-navy mb-6 leading-tight">Mastery in Modern Dentistry</h2>
+          <p className="text-charcoal-500 text-lg font-light leading-relaxed">
             We focus exclusively on high-value, life-changing procedures. Discover how our specialist team can transform your confidence.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16">
           {clinicConfig.treatments.map((treatment, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
+              transition={{ duration: 0.8, delay: index * 0.15 }}
             >
               <Link 
                 href="/?booking=true"
-                className="group bg-white rounded-xl overflow-hidden shadow-[0_10px_40px_rgba(15,32,39,0.04)] hover:shadow-[0_10px_40px_rgba(15,32,39,0.08)] transition-all duration-500 flex flex-col cursor-pointer block h-full"
+                className="group bg-white rounded-2xl overflow-hidden shadow-luxury hover:shadow-[0_30px_60px_-15px_rgba(10,20,26,0.2)] transition-all duration-500 flex flex-col cursor-pointer block h-full border border-charcoal-200/50"
               >
-                <div className="relative h-64 overflow-hidden">
-                  <div className="absolute inset-0 bg-navy/10 group-hover:bg-transparent transition-colors z-10 duration-500" />
+                <div className="relative h-72 lg:h-80 overflow-hidden">
+                  <div className="absolute inset-0 bg-navy/20 group-hover:bg-transparent transition-colors z-10 duration-700 mix-blend-multiply" />
                   <Image 
                     src={treatment.image} 
                     alt={treatment.title} 
                     fill
                     sizes="(max-width: 768px) 100vw, 50vw"
-                    className="object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out"
+                    className="object-cover transform group-hover:scale-105 transition-transform duration-[1.5s] ease-out"
                   />
                 </div>
-                <div className="p-8 flex-grow flex flex-col justify-between">
+                <div className="p-10 flex-grow flex flex-col justify-between relative bg-white">
+                  {/* Decorative corner element */}
+                  <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-pearl to-transparent opacity-50 pointer-events-none rounded-bl-3xl" />
+                  
                   <div>
-                    <h3 className="text-2xl font-serif text-navy mb-3">{treatment.title}</h3>
-                    <p className="text-charcoal-500 leading-relaxed mb-6">
+                    <h3 className="text-3xl font-serif text-navy mb-4 group-hover:text-gold transition-colors duration-300">{treatment.title}</h3>
+                    <p className="text-charcoal-500 leading-relaxed mb-8 font-light text-lg">
                       {treatment.shortDescription}
                     </p>
-                    <p className="text-gold font-medium mb-6">{treatment.price}</p>
+                    <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-charcoal-50 border border-charcoal-200 mb-8">
+                      <p className="text-navy font-semibold text-sm tracking-wide">{treatment.price}</p>
+                    </div>
                   </div>
-                  <div className="flex items-center text-navy font-medium group-hover:text-gold transition-colors">
-                    Discover {treatment.title}
-                    <ArrowRight className="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform" />
+                  <div className="flex items-center text-navy font-semibold uppercase tracking-wider text-sm group-hover:text-gold transition-colors duration-300">
+                    Discover Treatment
+                    <ArrowRight className="w-5 h-5 ml-3 transform group-hover:translate-x-2 transition-transform duration-300" />
                   </div>
                 </div>
               </Link>

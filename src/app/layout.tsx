@@ -3,6 +3,7 @@ import { Inter, Playfair_Display } from "next/font/google";
 import { Toaster } from "sonner";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { clinicConfig } from "@/config/clinic";
+import { FloatingMobileCTA } from "@/components/layout/FloatingMobileCTA";
 import "./globals.css";
 
 const inter = Inter({
@@ -102,6 +103,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         {children}
+        <FloatingMobileCTA />
         <Toaster position="bottom-right" richColors />
       </body>
       <GoogleAnalytics gaId="G-XXXXXXXXXX" />
