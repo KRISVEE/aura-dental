@@ -1,20 +1,23 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { Booking, BookingStatus } from "@/types/database";
-import { format } from "date-fns";
-import { RefreshCcw, AlertCircle, Search, ChevronDown, ChevronUp } from "lucide-react";
+import { format, parseISO } from "date-fns";
+import { RefreshCcw, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export function BookingsTable({ initialBookings }: { initialBookings: Booking[] }) {
   const [bookings, setBookings] = useState<Booking[]>(initialBookings || []);
   const [refundingId, setRefundingId] = useState<string | null>(null);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    setBookings(initialBookings);
+  }, [initialBookings]);
 
   const handleRefund = async (bookingId: string, paymentIntentId: string) => {
     if (!confirm("Are you sure you want to cancel this booking and release the deposit hold? This action cannot be undone.")) {
@@ -137,200 +140,135 @@ export function BookingsTable({ initialBookings }: { initialBookings: Booking[] 
     return "Paid £50";
   };
 
-  const filteredBookings = useMemo(() => {
-    let filtered = bookings;
-    
-    // Status filter
-    if (statusFilter !== "all") {
-      filtered = filtered.filter(b => b.status === statusFilter);
-    }
-
-    // Search query filter
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter((b) => 
-        b.booking_reference?.toLowerCase().includes(query) ||
-        b.first_name.toLowerCase().includes(query) ||
-        b.last_name.toLowerCase().includes(query) ||
-        b.email.toLowerCase().includes(query) ||
-        b.phone.toLowerCase().includes(query)
-      );
-    }
-
-    return filtered;
-  }, [bookings, searchQuery, statusFilter]);
-
   if (!bookings || bookings.length === 0) {
     return (
       <div className="p-12 text-center text-gray-500">
         <AlertCircle className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-        <h3 className="text-lg font-medium text-gray-900 mb-1">No bookings found</h3>
-        <p>New consultation requests will appear here once deposits are paid.</p>
+        <h3 className="text-lg font-medium text-gray-900 mb-1">No matching bookings found</h3>
+        <p className="mb-4 text-sm">Try adjusting your search or filters.</p>
+        <Link href="/admin" className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+          Clear Filters
+        </Link>
       </div>
     );
   }
 
   return (
-    <div>
-      <div className="p-4 border-b border-gray-200 bg-gray-50/50 flex flex-col sm:flex-row gap-4 justify-between items-center">
-        <div className="relative w-full max-w-md">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-5 w-5 text-gray-400" />
-          </div>
-          <input
-            type="text"
-            className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-navy focus:border-navy sm:text-sm transition duration-150 ease-in-out"
-            placeholder="Search Ref, Name, Email, Phone..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-        <div className="w-full sm:w-auto flex items-center gap-2">
-          <label htmlFor="statusFilter" className="text-sm font-medium text-gray-700 whitespace-nowrap">
-            Filter:
-          </label>
-          <select
-            id="statusFilter"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-navy focus:border-navy sm:text-sm rounded-md"
-          >
-            <option value="all">All Bookings</option>
-            <option value="pending_confirmation">Pending Confirmation</option>
-            <option value="confirmed">Confirmed</option>
-            <option value="consultation_scheduled">Consultation Scheduled</option>
-            <option value="treatment_planned">Treatment Planned</option>
-            <option value="completed">Completed</option>
-            <option value="refunded">Refunded</option>
-            <option value="cancelled">Cancelled</option>
-          </select>
-        </div>
-      </div>
-      
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Booking Ref
-              </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Date Booked
-              </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Patient
-              </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Treatment & Time
-              </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Deposit Status
-              </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Booking Status
-              </th>
-              <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Action
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {filteredBookings.length > 0 ? (
-              filteredBookings.map((booking) => (
-                <React.Fragment key={booking.id}>
-                <tr className="hover:bg-gray-50 transition-colors cursor-pointer" onClick={() => setExpandedId(expandedId === booking.id ? null : booking.id)}>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm font-mono font-medium text-navy bg-navy/5 px-2 py-1 rounded">
-                      {booking.booking_reference || "N/A"}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {format(new Date(booking.created_at), "MMM d, yyyy")}
-                    <br />
-                    <span className="text-xs">{format(new Date(booking.created_at), "h:mm a")}</span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">
-                      {booking.first_name} {booking.last_name}
+    <div className="overflow-x-auto">
+      <table className="min-w-full divide-y divide-gray-200">
+        <thead className="bg-gray-50">
+          <tr>
+            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Booking Ref
+            </th>
+            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Patient
+            </th>
+            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Status
+            </th>
+            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Consultation Date
+            </th>
+            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Created Date
+            </th>
+            <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Action
+            </th>
+          </tr>
+        </thead>
+        <tbody className="bg-white divide-y divide-gray-200">
+          {bookings.map((booking) => (
+            <React.Fragment key={booking.id}>
+              <tr className="hover:bg-gray-50 transition-colors cursor-pointer" onClick={() => setExpandedId(expandedId === booking.id ? null : booking.id)}>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span className="text-sm font-mono font-medium text-navy bg-navy/5 px-2 py-1 rounded">
+                    {booking.booking_reference || "N/A"}
+                  </span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm font-medium text-gray-900">
+                    {booking.first_name} {booking.last_name}
+                  </div>
+                  <div className="text-sm text-gray-500">{booking.email}</div>
+                  <div className="text-sm text-gray-500">{booking.phone}</div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap flex flex-col items-start gap-1">
+                  {getStatusBadge(booking.status)}
+                  <span className="text-xs text-gray-500 ml-1 border-l-2 border-gray-200 pl-2">
+                    {getDepositStatus(booking.status)}
+                  </span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {booking.consultation_date ? (
+                    <div className="text-sm text-navy font-medium">
+                      {format(parseISO(booking.consultation_date), "MMM d, yyyy")}
+                      {booking.consultation_time && <span className="ml-1 text-gray-500 font-normal">at {booking.consultation_time.slice(0,5)}</span>}
                     </div>
-                    <div className="text-sm text-gray-500">{booking.email}</div>
-                    <div className="text-sm text-gray-500">{booking.phone}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900 capitalize">{booking.treatment_interest}</div>
-                    <div className="text-sm text-gray-500 capitalize">{booking.preferred_time}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">
-                      {getDepositStatus(booking.status)}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {getStatusBadge(booking.status)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <div className="flex flex-col items-end gap-2" onClick={(e) => e.stopPropagation()}>
-                      {updatingId === booking.id ? (
-                        <span className="inline-flex items-center text-sm text-gray-500">
-                          <RefreshCcw className="w-4 h-4 mr-1.5 animate-spin" />
-                          Updating...
-                        </span>
-                      ) : (
-                        <select
-                          className="block w-full max-w-[180px] pl-3 pr-8 py-1.5 text-xs border-gray-300 focus:outline-none focus:ring-navy focus:border-navy rounded-md"
-                          value={booking.status}
-                          onChange={(e) => handleUpdateStatus(booking.id, e.target.value as BookingStatus)}
-                        >
-                          <option value="pending_confirmation">Pending Confirmation</option>
-                          <option value="confirmed">Confirmed</option>
-                          <option value="consultation_scheduled">Consultation Scheduled</option>
-                          <option value="treatment_planned">Treatment Planned</option>
-                          <option value="completed">Completed</option>
-                          <option value="refunded">Refunded</option>
-                          <option value="cancelled">Cancelled</option>
-                        </select>
-                      )}
+                  ) : (
+                    <span className="text-sm text-gray-400 italic">Not Scheduled</span>
+                  )}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {format(new Date(booking.created_at), "MMM d, yyyy")}
+                  <br />
+                  <span className="text-xs">{format(new Date(booking.created_at), "h:mm a")}</span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <div className="flex flex-col items-end gap-2" onClick={(e) => e.stopPropagation()}>
+                    {updatingId === booking.id ? (
+                      <span className="inline-flex items-center text-sm text-gray-500">
+                        <RefreshCcw className="w-4 h-4 mr-1.5 animate-spin" />
+                        Updating...
+                      </span>
+                    ) : (
+                      <select
+                        className="block w-full max-w-[180px] pl-3 pr-8 py-1.5 text-xs border-gray-300 focus:outline-none focus:ring-navy focus:border-navy rounded-md"
+                        value={booking.status}
+                        onChange={(e) => handleUpdateStatus(booking.id, e.target.value as BookingStatus)}
+                      >
+                        <option value="pending_confirmation">Pending Confirmation</option>
+                        <option value="confirmed">Confirmed</option>
+                        <option value="consultation_scheduled">Consultation Scheduled</option>
+                        <option value="treatment_planned">Treatment Planned</option>
+                        <option value="completed">Completed</option>
+                        <option value="refunded">Refunded</option>
+                        <option value="cancelled">Cancelled</option>
+                      </select>
+                    )}
 
-                      {/* We can still allow refund if it's pending/confirmed and not yet refunded */}
-                      {(booking.status === "pending_confirmation" || booking.status === "confirmed") && (
-                        <button
-                          onClick={() => handleRefund(booking.id, booking.stripe_payment_intent_id)}
-                          disabled={refundingId === booking.id || updatingId === booking.id}
-                          className="inline-flex items-center text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 px-2 py-1 rounded text-xs transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          {refundingId === booking.id ? (
-                            <RefreshCcw className="w-3 h-3 mr-1 animate-spin" />
-                          ) : null}
-                          Issue Refund
-                        </button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-                {expandedId === booking.id && (
-                  <tr>
-                    <td colSpan={7} className="px-6 py-4 bg-gray-50/30 border-t border-gray-100">
-                      <ExpandedDetailsPanel 
-                        booking={booking} 
-                        onUpdate={(updated) => {
-                          setBookings((prev) => prev.map((b) => (b.id === updated.id ? updated : b)));
-                        }} 
-                      />
-                    </td>
-                  </tr>
-                )}
-                </React.Fragment>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={7} className="px-6 py-12 text-center text-gray-500 text-sm">
-                  No bookings match your search or filter.
+                    {(booking.status === "pending_confirmation" || booking.status === "confirmed") && (
+                      <button
+                        onClick={() => handleRefund(booking.id, booking.stripe_payment_intent_id)}
+                        disabled={refundingId === booking.id || updatingId === booking.id}
+                        className="inline-flex items-center text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 px-2 py-1 rounded text-xs transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {refundingId === booking.id ? (
+                          <RefreshCcw className="w-3 h-3 mr-1 animate-spin" />
+                        ) : null}
+                        Issue Refund
+                      </button>
+                    )}
+                  </div>
                 </td>
               </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+              {expandedId === booking.id && (
+                <tr>
+                  <td colSpan={6} className="px-6 py-4 bg-gray-50/30 border-t border-gray-100">
+                    <ExpandedDetailsPanel 
+                      booking={booking} 
+                      onUpdate={(updated) => {
+                        setBookings((prev) => prev.map((b) => (b.id === updated.id ? updated : b)));
+                      }} 
+                    />
+                  </td>
+                </tr>
+              )}
+            </React.Fragment>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
