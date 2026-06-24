@@ -23,16 +23,16 @@ export default function Home() {
       <main className="flex-1">
         <Hero />
         <TrustBar />
-        <WhyChooseUs />
         <TreatmentEstimator />
-        <TreatmentGrid />
+        <WhyChooseUs />
+        <AvailabilitySection />
         <FeaturedCaseStudy />
         <BeforeAfterSection />
+        <TreatmentGrid />
         <TestimonialsSection />
         <GoogleReviewsShowcase />
         <FAQSection />
         <ContactOptionsBlock />
-        <AvailabilitySection />
         <FinalCTA />
       </main>
       <Footer />
