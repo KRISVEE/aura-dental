@@ -55,8 +55,9 @@ function WizardContent() {
     }
   }
 
-  const handleForceClose = () => {
-    setShowCloseConfirm(false)
+  const handleForceClose = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
     closeModal()
   }
 
@@ -154,12 +155,14 @@ function WizardContent() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="absolute inset-0 z-50 flex items-center justify-center bg-navy/60 backdrop-blur-sm p-6"
+              onClick={() => setShowCloseConfirm(false)}
             >
               <motion.div 
                 initial={{ scale: 0.9, opacity: 0, y: 10 }}
                 animate={{ scale: 1, opacity: 1, y: 0 }}
                 exit={{ scale: 0.9, opacity: 0, y: 10 }}
                 className="bg-white p-8 rounded-2xl shadow-luxury max-w-sm text-center border border-charcoal-200"
+                onClick={(e) => e.stopPropagation()}
               >
                 <div className="w-16 h-16 bg-gold/10 rounded-full flex items-center justify-center mx-auto mb-6">
                   <span className="text-3xl">✨</span>
