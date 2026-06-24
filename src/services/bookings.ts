@@ -75,3 +75,25 @@ export async function updateBookingStatus(id: string, status: BookingStatus): Pr
   if (error) throw error;
   return data as Booking;
 }
+
+// Update scheduling details and internal admin notes
+export async function updateBookingDetails(
+  id: string, 
+  details: { 
+    consultation_date?: string | null; 
+    consultation_time?: string | null; 
+    admin_notes?: string | null; 
+    status?: BookingStatus;
+  }
+): Promise<Booking> {
+  const supabase = createServerClient();
+  const { data, error } = await supabase
+    .from("bookings")
+    .update(details)
+    .eq("id", id)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data as Booking;
+}

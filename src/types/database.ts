@@ -13,6 +13,9 @@ export interface Booking {
   stripe_payment_intent_id: string;
   status: BookingStatus;
   created_at: string;
+  consultation_date: string | null;
+  consultation_time: string | null;
+  admin_notes: string | null;
 }
 
 export interface BookingInsert {
@@ -26,4 +29,7 @@ export interface BookingInsert {
   preferred_time: string;
   stripe_payment_intent_id: string;
   status?: BookingStatus;
+  consultation_date?: string | null;
+  consultation_time?: string | null;
+  admin_notes?: string | null;
 }
