@@ -4,6 +4,8 @@ import { Toaster } from "sonner";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { clinicConfig } from "@/config/clinic";
 import { FloatingMobileCTA } from "@/components/layout/FloatingMobileCTA";
+import { WhatsAppFloatingButton } from "@/components/ui/WhatsAppFloatingButton";
+import { SmartAssistanceWidget } from "@/components/ui/SmartAssistanceWidget";
 import "./globals.css";
 
 const inter = Inter({
@@ -104,6 +106,8 @@ export default function RootLayout({
         />
         {children}
         <FloatingMobileCTA />
+        <WhatsAppFloatingButton />
+        <SmartAssistanceWidget />
         <Toaster position="bottom-right" richColors />
       </body>
       <GoogleAnalytics gaId="G-XXXXXXXXXX" />

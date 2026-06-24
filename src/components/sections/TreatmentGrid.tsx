@@ -1,10 +1,12 @@
 "use client"
 
-import { ArrowRight } from "lucide-react"
+import { ArrowRight, MessageCircle } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { motion } from "framer-motion"
 import { clinicConfig } from "@/config/clinic"
+import { whatsappConfig } from "@/config/whatsapp"
+import { trackEvent } from "@/lib/analytics"
 
 export function TreatmentGrid() {
   return (
@@ -38,9 +40,8 @@ export function TreatmentGrid() {
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: index * 0.15 }}
             >
-              <Link 
-                href="/?booking=true"
-                className="group bg-white rounded-2xl overflow-hidden shadow-luxury hover:shadow-[0_30px_60px_-15px_rgba(10,20,26,0.2)] transition-all duration-500 flex flex-col cursor-pointer block h-full border border-charcoal-200/50"
+              <div 
+                className="group bg-white rounded-2xl overflow-hidden shadow-luxury hover:shadow-[0_30px_60px_-15px_rgba(10,20,26,0.2)] transition-all duration-500 flex flex-col h-full border border-charcoal-200/50"
               >
                 <div className="relative h-72 lg:h-80 overflow-hidden">
                   <div className="absolute inset-0 bg-navy/20 group-hover:bg-transparent transition-colors z-10 duration-700 mix-blend-multiply" />
@@ -65,12 +66,29 @@ export function TreatmentGrid() {
                       <p className="text-navy font-semibold text-sm tracking-wide">{treatment.price}</p>
                     </div>
                   </div>
-                  <div className="flex items-center text-navy font-semibold uppercase tracking-wider text-sm group-hover:text-gold transition-colors duration-300">
-                    Discover Treatment
-                    <ArrowRight className="w-5 h-5 ml-3 transform group-hover:translate-x-2 transition-transform duration-300" />
+                  <div className="flex flex-col xl:flex-row items-center gap-3 mt-4 pt-6 border-t border-charcoal-100/50">
+                    <Link 
+                      href="/?booking=true"
+                      className="w-full xl:w-auto flex-1 flex items-center justify-center bg-navy hover:bg-gold text-white px-4 py-3 rounded-xl font-medium text-xs tracking-wider uppercase transition-colors duration-300"
+                    >
+                      Book Consult
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Link>
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        const message = whatsappConfig.treatmentMessages[treatment.id as keyof typeof whatsappConfig.treatmentMessages] || whatsappConfig.defaultMessage;
+                        trackEvent("treatment_whatsapp_click", { treatment: treatment.id });
+                        window.open(whatsappConfig.getUrl(message), "_blank", "noopener,noreferrer");
+                      }}
+                      className="w-full xl:w-auto flex-1 flex items-center justify-center bg-[#25D366]/10 hover:bg-[#25D366] text-[#25D366] hover:text-white px-4 py-3 rounded-xl font-medium text-xs tracking-wider uppercase transition-colors duration-300 border border-[#25D366]/20"
+                    >
+                      <MessageCircle className="w-4 h-4 mr-2" />
+                      Ask on WhatsApp
+                    </button>
                   </div>
                 </div>
-              </Link>
+              </div>
             </motion.div>
           ))}
         </div>

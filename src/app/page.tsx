@@ -8,6 +8,7 @@ import { TreatmentGrid } from "@/components/sections/TreatmentGrid";
 import { BeforeAfterSection } from "@/components/sections/BeforeAfterSection";
 import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
 import { FAQSection } from "@/components/sections/FAQSection";
+import { ContactOptionsBlock } from "@/components/sections/ContactOptionsBlock";
 import { FinalCTA } from "@/components/sections/FinalCTA";
 import { BookingWizard } from "@/components/booking/BookingWizard";
 
@@ -23,6 +24,7 @@ export default function Home() {
         <BeforeAfterSection />
         <TestimonialsSection />
         <FAQSection />
+        <ContactOptionsBlock />
         <FinalCTA />
       </main>
       <Footer />
