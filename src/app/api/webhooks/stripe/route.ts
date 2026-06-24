@@ -63,7 +63,7 @@ export async function POST(req: Request) {
             treatment_interest: metadata.treatment,
             preferred_time: metadata.preferredTime,
             stripe_payment_intent_id: paymentIntentAuth.id,
-            status: "pending",
+            status: "pending_confirmation",
           });
           console.log(`[SUPABASE] Success: Booking inserted with ID: ${booking.id}`);
         } catch (dbError: unknown) {

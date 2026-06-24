@@ -1,16 +1,18 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Booking } from "@/types/database";
+import { Booking, BookingStatus } from "@/types/database";
 import { format } from "date-fns";
-import { RefreshCcw, AlertCircle, Search } from "lucide-react";
+import { RefreshCcw, AlertCircle, Search, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
 export function BookingsTable({ initialBookings }: { initialBookings: Booking[] }) {
   const [bookings, setBookings] = useState<Booking[]>(initialBookings || []);
   const [refundingId, setRefundingId] = useState<string | null>(null);
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
   const router = useRouter();
 
   const handleRefund = async (bookingId: string, paymentIntentId: string) => {
@@ -35,7 +37,6 @@ export function BookingsTable({ initialBookings }: { initialBookings: Booking[] 
 
       toast.success("Deposit released and booking refunded successfully.");
       
-      // Update local state to reflect the refund immediately
       setBookings((prev) =>
         prev.map((b) => (b.id === bookingId ? { ...b, status: "refunded" } : b))
       );
@@ -47,10 +48,38 @@ export function BookingsTable({ initialBookings }: { initialBookings: Booking[] 
     }
   };
 
+  const handleUpdateStatus = async (bookingId: string, newStatus: BookingStatus) => {
+    setUpdatingId(bookingId);
+    try {
+      const response = await fetch("/api/admin/update-status", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ bookingId, status: newStatus }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to update status");
+      }
+
+      toast.success("Booking status updated successfully.");
+      
+      setBookings((prev) =>
+        prev.map((b) => (b.id === bookingId ? { ...b, status: newStatus } : b))
+      );
+      router.refresh();
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update status.");
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case "deposit_held":
-      case "pending":
+      case "pending_confirmation":
         return (
           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
             Pending Confirmation
@@ -60,6 +89,18 @@ export function BookingsTable({ initialBookings }: { initialBookings: Booking[] 
         return (
           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
             Confirmed
+          </span>
+        );
+      case "consultation_scheduled":
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+            Consultation Scheduled
+          </span>
+        );
+      case "treatment_planned":
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+            Treatment Planned
           </span>
         );
       case "completed":
@@ -75,10 +116,9 @@ export function BookingsTable({ initialBookings }: { initialBookings: Booking[] 
           </span>
         );
       case "cancelled":
-      case "forfeited":
         return (
           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-            {status === "forfeited" ? "Forfeited" : "Cancelled"}
+            Cancelled
           </span>
         );
       default:
@@ -90,16 +130,34 @@ export function BookingsTable({ initialBookings }: { initialBookings: Booking[] 
     }
   };
 
+  const getDepositStatus = (status: string) => {
+    if (status === "refunded") return "Refunded";
+    if (status === "cancelled") return "Forfeited";
+    return "Paid £50";
+  };
+
   const filteredBookings = useMemo(() => {
-    if (!searchQuery.trim()) return bookings;
-    const query = searchQuery.toLowerCase();
-    return bookings.filter((b) => 
-      b.booking_reference?.toLowerCase().includes(query) ||
-      b.first_name.toLowerCase().includes(query) ||
-      b.last_name.toLowerCase().includes(query) ||
-      b.email.toLowerCase().includes(query)
-    );
-  }, [bookings, searchQuery]);
+    let filtered = bookings;
+    
+    // Status filter
+    if (statusFilter !== "all") {
+      filtered = filtered.filter(b => b.status === statusFilter);
+    }
+
+    // Search query filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter((b) => 
+        b.booking_reference?.toLowerCase().includes(query) ||
+        b.first_name.toLowerCase().includes(query) ||
+        b.last_name.toLowerCase().includes(query) ||
+        b.email.toLowerCase().includes(query) ||
+        b.phone.toLowerCase().includes(query)
+      );
+    }
+
+    return filtered;
+  }, [bookings, searchQuery, statusFilter]);
 
   if (!bookings || bookings.length === 0) {
     return (
@@ -113,18 +171,38 @@ export function BookingsTable({ initialBookings }: { initialBookings: Booking[] 
 
   return (
     <div>
-      <div className="p-4 border-b border-gray-200 bg-gray-50/50">
-        <div className="relative max-w-md">
+      <div className="p-4 border-b border-gray-200 bg-gray-50/50 flex flex-col sm:flex-row gap-4 justify-between items-center">
+        <div className="relative w-full max-w-md">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Search className="h-5 w-5 text-gray-400" />
           </div>
           <input
             type="text"
             className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-navy focus:border-navy sm:text-sm transition duration-150 ease-in-out"
-            placeholder="Search by Booking Ref, Name, or Email..."
+            placeholder="Search Ref, Name, Email, Phone..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
+        </div>
+        <div className="w-full sm:w-auto flex items-center gap-2">
+          <label htmlFor="statusFilter" className="text-sm font-medium text-gray-700 whitespace-nowrap">
+            Filter:
+          </label>
+          <select
+            id="statusFilter"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-navy focus:border-navy sm:text-sm rounded-md"
+          >
+            <option value="all">All Bookings</option>
+            <option value="pending_confirmation">Pending Confirmation</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="consultation_scheduled">Consultation Scheduled</option>
+            <option value="treatment_planned">Treatment Planned</option>
+            <option value="completed">Completed</option>
+            <option value="refunded">Refunded</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
         </div>
       </div>
       
@@ -145,7 +223,10 @@ export function BookingsTable({ initialBookings }: { initialBookings: Booking[] 
                 Treatment & Time
               </th>
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
+                Deposit Status
+              </th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Booking Status
               </th>
               <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Action
@@ -178,30 +259,57 @@ export function BookingsTable({ initialBookings }: { initialBookings: Booking[] 
                     <div className="text-sm text-gray-500 capitalize">{booking.preferred_time}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-medium text-gray-900">
+                      {getDepositStatus(booking.status)}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
                     {getStatusBadge(booking.status)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    {(booking.status === "deposit_held" || booking.status === "pending") && (
-                      <button
-                        onClick={() => handleRefund(booking.id, booking.stripe_payment_intent_id)}
-                        disabled={refundingId === booking.id}
-                        className="inline-flex items-center text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        {refundingId === booking.id ? (
+                    <div className="flex flex-col items-end gap-2">
+                      {updatingId === booking.id ? (
+                        <span className="inline-flex items-center text-sm text-gray-500">
                           <RefreshCcw className="w-4 h-4 mr-1.5 animate-spin" />
-                        ) : (
-                          <RefreshCcw className="w-4 h-4 mr-1.5" />
-                        )}
-                        Refund
-                      </button>
-                    )}
+                          Updating...
+                        </span>
+                      ) : (
+                        <select
+                          className="block w-full max-w-[180px] pl-3 pr-8 py-1.5 text-xs border-gray-300 focus:outline-none focus:ring-navy focus:border-navy rounded-md"
+                          value={booking.status}
+                          onChange={(e) => handleUpdateStatus(booking.id, e.target.value as BookingStatus)}
+                        >
+                          <option value="pending_confirmation">Pending Confirmation</option>
+                          <option value="confirmed">Confirmed</option>
+                          <option value="consultation_scheduled">Consultation Scheduled</option>
+                          <option value="treatment_planned">Treatment Planned</option>
+                          <option value="completed">Completed</option>
+                          <option value="refunded">Refunded</option>
+                          <option value="cancelled">Cancelled</option>
+                        </select>
+                      )}
+
+                      {/* We can still allow refund if it's pending/confirmed and not yet refunded */}
+                      {(booking.status === "pending_confirmation" || booking.status === "confirmed") && (
+                        <button
+                          onClick={() => handleRefund(booking.id, booking.stripe_payment_intent_id)}
+                          disabled={refundingId === booking.id || updatingId === booking.id}
+                          className="inline-flex items-center text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 px-2 py-1 rounded text-xs transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {refundingId === booking.id ? (
+                            <RefreshCcw className="w-3 h-3 mr-1 animate-spin" />
+                          ) : null}
+                          Issue Refund
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan={6} className="px-6 py-12 text-center text-gray-500 text-sm">
-                  No bookings match your search.
+                <td colSpan={7} className="px-6 py-12 text-center text-gray-500 text-sm">
+                  No bookings match your search or filter.
                 </td>
               </tr>
             )}

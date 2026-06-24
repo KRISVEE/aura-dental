@@ -1,4 +1,4 @@
-export type BookingStatus = "pending" | "deposit_held" | "confirmed" | "cancelled" | "refunded" | "forfeited" | "completed";
+export type BookingStatus = "pending_confirmation" | "confirmed" | "consultation_scheduled" | "treatment_planned" | "completed" | "refunded" | "cancelled";
 
 export interface Booking {
   id: string;

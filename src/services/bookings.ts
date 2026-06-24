@@ -18,7 +18,7 @@ export async function createBooking(data: BookingInsert): Promise<Booking> {
         treatment_interest: data.treatment_interest,
         preferred_time: data.preferred_time,
         stripe_payment_intent_id: data.stripe_payment_intent_id,
-        status: data.status || "pending",
+        status: data.status || "pending_confirmation",
       },
     ])
     .select()
