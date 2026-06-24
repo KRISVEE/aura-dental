@@ -2,7 +2,8 @@ import { createClient } from "@/utils/supabase/server";
 import { BookingsTable } from "@/components/admin/BookingsTable";
 import { DashboardStats } from "@/components/admin/DashboardStats";
 import { DashboardFilters } from "@/components/admin/DashboardFilters";
-import { Booking } from "@/types/database";
+import { EstimatesTable } from "@/components/admin/EstimatesTable";
+import { Booking, TreatmentEstimate } from "@/types/database";
 
 export default async function AdminDashboardPage(props: {
   searchParams: Promise<{ query?: string; status?: string; sort?: string }>;
@@ -65,6 +66,16 @@ export default async function AdminDashboardPage(props: {
     );
   }
 
+  // 3. Fetch Treatment Estimates
+  const { data: estimates, error: estimatesError } = await supabase
+    .from("treatment_estimates")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (estimatesError) {
+    console.error("Error fetching estimates:", estimatesError);
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white border-b border-gray-200">
@@ -84,9 +95,15 @@ export default async function AdminDashboardPage(props: {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <DashboardStats stats={stats} />
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-8">
           <DashboardFilters />
           <BookingsTable initialBookings={bookings as Booking[]} />
+        </div>
+
+        {/* Treatment Estimate Leads Section */}
+        <h2 className="text-xl font-serif text-navy mb-4">Treatment Estimate Leads</h2>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <EstimatesTable estimates={estimates as TreatmentEstimate[]} />
         </div>
       </main>
     </div>

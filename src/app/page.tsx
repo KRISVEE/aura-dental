@@ -12,6 +12,7 @@ import { GoogleReviewsShowcase } from "@/components/sections/GoogleReviewsShowca
 import { FAQSection } from "@/components/sections/FAQSection";
 import { ContactOptionsBlock } from "@/components/sections/ContactOptionsBlock";
 import { AvailabilitySection } from "@/components/sections/AvailabilitySection";
+import { TreatmentEstimator } from "@/components/sections/TreatmentEstimator";
 import { FinalCTA } from "@/components/sections/FinalCTA";
 import { BookingWizard } from "@/components/booking/BookingWizard";
 
@@ -23,6 +24,7 @@ export default function Home() {
         <Hero />
         <TrustBar />
         <WhyChooseUs />
+        <TreatmentEstimator />
         <TreatmentGrid />
         <FeaturedCaseStudy />
         <BeforeAfterSection />

@@ -11,7 +11,10 @@ type EventName =
   | "treatment_whatsapp_click"
   | "contact_option_click"
   | "availability_section_viewed"
-  | "availability_booking_click";
+  | "availability_booking_click"
+  | "calculator_started"
+  | "calculator_completed"
+  | "calculator_consultation_booked";
 
 export const trackEvent = (eventName: EventName, params?: Record<string, any>) => {
   // Console logging for development verification

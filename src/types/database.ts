@@ -33,3 +33,23 @@ export interface BookingInsert {
   consultation_time?: string | null;
   admin_notes?: string | null;
 }
+
+export interface TreatmentEstimate {
+  id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  treatment: string;
+  scope: string;
+  estimated_range: string;
+  created_at: string;
+}
+
+export interface TreatmentEstimateInsert {
+  first_name: string;
+  last_name: string;
+  email: string;
+  treatment: string;
+  scope: string;
+  estimated_range: string;
+}
