@@ -1,11 +1,16 @@
 "use client"
 
+import * as React from "react"
 import { Star, PlayCircle, Quote } from "lucide-react"
 import { clinicConfig } from "@/config/clinic"
+import { patientResultsConfig } from "@/config/patient-results"
 import Image from "next/image"
 import { motion } from "framer-motion"
 
 export function TestimonialsSection() {
+  const [isPlaying, setIsPlaying] = React.useState(false);
+  const featuredVideo = patientResultsConfig.videos[0];
+
   return (
     <section id="reviews" className="py-32 bg-navy text-white relative overflow-hidden">
       {/* Decorative oversized quotes */}
@@ -22,33 +27,48 @@ export function TestimonialsSection() {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="relative h-[500px] md:h-[600px] rounded-[2rem] overflow-hidden group cursor-pointer shadow-2xl"
+            className="relative h-[500px] md:h-[600px] rounded-[2rem] overflow-hidden group shadow-2xl"
           >
-            <div className="absolute inset-0 bg-navy/30 group-hover:bg-navy/10 transition-colors duration-500 z-10" />
-            <Image 
-              src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1000&auto=format&fit=crop" 
-              alt="Patient video testimonial" 
-              fill
-              sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-cover transition-transform duration-[1.5s] group-hover:scale-105"
-            />
-            
-            {/* Play Button */}
-            <div className="absolute inset-0 z-20 flex items-center justify-center">
-              <div className="w-24 h-24 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 group-hover:bg-white/20 group-hover:scale-110 transition-all duration-300 shadow-luxury">
-                <PlayCircle className="w-12 h-12 text-white" strokeWidth={1} />
-              </div>
-            </div>
+            {!isPlaying ? (
+              <div 
+                className="absolute inset-0 cursor-pointer"
+                onClick={() => setIsPlaying(true)}
+              >
+                <div className="absolute inset-0 bg-navy/30 group-hover:bg-navy/10 transition-colors duration-500 z-10" />
+                <Image 
+                  src={featuredVideo.thumbnail} 
+                  alt="Patient video testimonial" 
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  className="object-cover transition-transform duration-[1.5s] group-hover:scale-105"
+                />
+                
+                {/* Play Button */}
+                <div className="absolute inset-0 z-20 flex items-center justify-center">
+                  <div className="w-24 h-24 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 group-hover:bg-white/20 group-hover:scale-110 transition-all duration-300 shadow-luxury">
+                    <PlayCircle className="w-12 h-12 text-white" strokeWidth={1} />
+                  </div>
+                </div>
 
-            {/* Title Overlay */}
-            <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-navy/90 to-transparent p-8 pt-20 z-20">
-              <p className="font-serif text-3xl mb-2">Meet Rebecca</p>
-              <div className="flex items-center gap-3">
-                <span className="text-gold text-sm font-medium tracking-wider uppercase">Full Mouth Reconstruction</span>
-                <span className="w-1 h-1 rounded-full bg-white/50" />
-                <span className="text-white/80 text-sm">3 min watch</span>
+                {/* Title Overlay */}
+                <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-navy/90 to-transparent p-8 pt-20 z-20">
+                  <p className="font-serif text-3xl mb-2">Meet {featuredVideo.patientName}</p>
+                  <div className="flex items-center gap-3">
+                    <span className="text-gold text-sm font-medium tracking-wider uppercase">{featuredVideo.treatmentType}</span>
+                    <span className="w-1 h-1 rounded-full bg-white/50" />
+                    <span className="text-white/80 text-sm">{featuredVideo.durationWatch}</span>
+                  </div>
+                </div>
               </div>
-            </div>
+            ) : (
+              <iframe 
+                src={`${featuredVideo.videoUrl}?autoplay=1`} 
+                title={`${featuredVideo.patientName} Testimonial`}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="absolute inset-0 w-full h-full border-0"
+              />
+            )}
           </motion.div>
 
           {/* Text Reviews */}

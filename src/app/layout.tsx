@@ -3,6 +3,7 @@ import { Inter, Playfair_Display } from "next/font/google";
 import { Toaster } from "sonner";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { clinicConfig } from "@/config/clinic";
+import { patientResultsConfig } from "@/config/patient-results";
 import { FloatingMobileCTA } from "@/components/layout/FloatingMobileCTA";
 import { WhatsAppFloatingButton } from "@/components/ui/WhatsAppFloatingButton";
 import { SmartAssistanceWidget } from "@/components/ui/SmartAssistanceWidget";
@@ -91,6 +92,24 @@ export default function RootLayout({
         };
       }),
     priceRange: "£££",
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: patientResultsConfig.stats.averageRating.split('/')[0],
+      reviewCount: patientResultsConfig.stats.totalTransformations.replace('+', ''),
+    },
+    review: patientResultsConfig.reviews.map((r) => ({
+      "@type": "Review",
+      author: {
+        "@type": "Person",
+        name: r.patientName,
+      },
+      reviewRating: {
+        "@type": "Rating",
+        ratingValue: r.rating,
+        bestRating: 5,
+      },
+      reviewBody: r.text,
+    })),
   };
 
   return (

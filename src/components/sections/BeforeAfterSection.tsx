@@ -4,6 +4,7 @@ import * as React from "react"
 import { Button } from "@/components/ui/Button"
 import Image from "next/image"
 import { motion } from "framer-motion"
+import { patientResultsConfig } from "@/config/patient-results"
 
 function SimpleCompareSlider({ before, after, label }: { before: string, after: string, label: string }) {
   const [position, setPosition] = React.useState(50)
@@ -85,18 +86,35 @@ export function BeforeAfterSection() {
           transition={{ duration: 1, delay: 0.2 }}
           className="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-20"
         >
-          <SimpleCompareSlider 
-            before="https://images.unsplash.com/photo-1598256989800-fea5ce5146ce?q=80&w=800&auto=format&fit=crop&blur=10"
-            after="https://images.unsplash.com/photo-1598256989800-fea5ce5146ce?q=80&w=800&auto=format&fit=crop"
-            label="Full Arch Dental Implants"
-          />
-          <div className="hidden lg:block">
-            <SimpleCompareSlider 
-              before="https://images.unsplash.com/photo-1606811841689-23dfddce3e95?q=80&w=800&auto=format&fit=crop&blur=10"
-              after="https://images.unsplash.com/photo-1606811841689-23dfddce3e95?q=80&w=800&auto=format&fit=crop"
-              label="Porcelain Veneers & Whitening"
-            />
-          </div>
+          {patientResultsConfig.caseStudies.slice(0, 2).map((study) => (
+            <div key={study.id} className="flex flex-col gap-8">
+              <SimpleCompareSlider 
+                before={study.beforeImage}
+                after={study.afterImage}
+                label={`${study.treatmentType} Transformation`}
+              />
+              <div className="bg-white p-8 rounded-2xl shadow-sm border border-charcoal-200">
+                <div className="grid grid-cols-2 gap-6">
+                  <div>
+                    <h4 className="text-xs font-bold text-charcoal-400 uppercase tracking-widest mb-1">Patient Goal</h4>
+                    <p className="text-navy font-medium text-sm leading-relaxed">{study.patientGoal}</p>
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-charcoal-400 uppercase tracking-widest mb-1">Treatment</h4>
+                    <p className="text-navy font-medium text-sm leading-relaxed">{study.treatmentType}</p>
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-charcoal-400 uppercase tracking-widest mb-1">Outcome</h4>
+                    <p className="text-navy font-medium text-sm leading-relaxed">{study.treatmentOutcome}</p>
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-charcoal-400 uppercase tracking-widest mb-1">Duration</h4>
+                    <p className="text-navy font-medium text-sm leading-relaxed">{study.duration}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
         </motion.div>
 
         <motion.div 

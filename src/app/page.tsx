@@ -5,8 +5,10 @@ import { Hero } from "@/components/sections/Hero";
 import { TrustBar } from "@/components/sections/TrustBar";
 import { WhyChooseUs } from "@/components/sections/WhyChooseUs";
 import { TreatmentGrid } from "@/components/sections/TreatmentGrid";
+import { FeaturedCaseStudy } from "@/components/sections/FeaturedCaseStudy";
 import { BeforeAfterSection } from "@/components/sections/BeforeAfterSection";
 import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
+import { GoogleReviewsShowcase } from "@/components/sections/GoogleReviewsShowcase";
 import { FAQSection } from "@/components/sections/FAQSection";
 import { ContactOptionsBlock } from "@/components/sections/ContactOptionsBlock";
 import { AvailabilitySection } from "@/components/sections/AvailabilitySection";
@@ -22,8 +24,10 @@ export default function Home() {
         <TrustBar />
         <WhyChooseUs />
         <TreatmentGrid />
+        <FeaturedCaseStudy />
         <BeforeAfterSection />
         <TestimonialsSection />
+        <GoogleReviewsShowcase />
         <FAQSection />
         <ContactOptionsBlock />
         <AvailabilitySection />
