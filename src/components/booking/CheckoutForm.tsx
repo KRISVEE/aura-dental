@@ -9,6 +9,7 @@ import {
 import { ShieldCheck, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/Button"
 import { useBookingWizard } from "@/contexts/BookingContext"
+import { toast } from "sonner"
 
 export function CheckoutForm() {
   const stripe = useStripe()
@@ -41,7 +42,9 @@ export function CheckoutForm() {
 
     if (submitError) {
       // Show error to your customer (e.g., payment details incomplete)
-      setError(submitError.message ?? "An unexpected error occurred.")
+      const errMessage = submitError.message ?? "An unexpected error occurred."
+      setError(errMessage)
+      toast.error(errMessage)
       setIsProcessing(false)
     } else {
       // Payment succeeded or requires additional actions (handled by Stripe if needed)
