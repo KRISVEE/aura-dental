@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useState } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 
 export function useBookingModal() {
@@ -6,9 +6,19 @@ export function useBookingModal() {
   const router = useRouter();
   const pathname = usePathname();
 
-  const isOpen = searchParams.get("booking") === "true";
+  const [isEagerlyClosed, setIsEagerlyClosed] = useState(false);
+
+  // Sync eager state when search params change externally
+  useEffect(() => {
+    if (searchParams.get("booking") !== "true") {
+      setIsEagerlyClosed(false);
+    }
+  }, [searchParams]);
+
+  const isOpen = searchParams.get("booking") === "true" && !isEagerlyClosed;
 
   const openModal = useCallback(() => {
+    setIsEagerlyClosed(false);
     const params = new URLSearchParams(searchParams.toString());
     params.set("booking", "true");
     // Use push so they can use browser back button to close it
@@ -16,9 +26,21 @@ export function useBookingModal() {
   }, [searchParams, router, pathname]);
 
   const closeModal = useCallback(() => {
+    console.log("[useBookingModal] closeModal triggered");
+    
+    // Eagerly unmount the modal before the Next.js router catches up
+    setIsEagerlyClosed(true);
+
     const params = new URLSearchParams(searchParams.toString());
     params.delete("booking");
     const newUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname;
+    
+    console.log("[useBookingModal] Executing history.replaceState and router.replace to:", newUrl);
+    
+    // Synchronously strip the URL param for immediate visual feedback
+    window.history.replaceState(null, "", newUrl);
+    
+    // Formalize the route change with Next.js
     router.replace(newUrl, { scroll: false });
   }, [searchParams, router, pathname]);
 
