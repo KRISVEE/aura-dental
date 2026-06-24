@@ -4,6 +4,8 @@ import * as React from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { X, ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/Button"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 import { useBookingModal } from "@/hooks/useBookingModal"
 import { BookingProvider, useBookingWizard } from "@/contexts/BookingContext"
@@ -35,6 +37,7 @@ function WizardContent() {
   const { isOpen, closeModal } = useBookingModal()
   const { step, direction, previousStep, resetBooking } = useBookingWizard()
   const [showCloseConfirm, setShowCloseConfirm] = React.useState(false)
+  const pathname = usePathname()
 
   // Clear state when modal is fully closed
   React.useEffect(() => {
@@ -56,7 +59,6 @@ function WizardContent() {
   }
 
   const handleForceClose = () => {
-    setShowCloseConfirm(false)
     closeModal()
   }
 
@@ -174,8 +176,10 @@ function WizardContent() {
                   <Button onClick={() => setShowCloseConfirm(false)} className="w-full h-12 text-md shadow-md hover:shadow-lg">
                     I want to continue
                   </Button>
-                  <Button variant="ghost" onClick={handleForceClose} className="w-full h-12 text-charcoal-400 hover:text-charcoal-600 hover:bg-transparent">
-                    Yes, leave anyway
+                  <Button asChild variant="ghost" className="w-full h-12 text-charcoal-400 hover:text-charcoal-600 hover:bg-transparent">
+                    <Link href={pathname} scroll={false} onClick={handleForceClose}>
+                      Yes, leave anyway
+                    </Link>
                   </Button>
                 </div>
               </motion.div>
